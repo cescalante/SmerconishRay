@@ -25,29 +25,32 @@ export default function Command() {
         const fetchFavicon = async (url: string) => {
           try {
             const response = await axios.get(`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}`);
-            return response.config.url;
+            return response.config.url || "";
           } catch (error) {
             console.error("Error fetching favicon:", error);
             return Icon.Globe;
           }
         };
 
-        const promises = $("article.elementor-grid-item").slice(0, 20).map(async (index, element) => {
-          const title = $(element).find(".article__title a").text();
-          const link = $(element).find(".article__title a").attr("href");
-          const description = $(element).find(".article__excerpt").text();
-          const image = $(element).find(".article__thumbnail img").attr("src");
-          const favicon = await fetchFavicon(link);
+        const promises = $("article.elementor-grid-item")
+          .slice(0, 20)
+          .map(async (index, element) => {
+            const title = $(element).find(".article__title a").text();
+            const link = $(element).find(".article__title a").attr("href") || "";
+            const description = $(element).find(".article__excerpt").text();
+            const image = $(element).find(".article__thumbnail img").attr("src") || "";
+            const favicon = await fetchFavicon(link);
 
-          articles.push({
-            id: index,
-            icon: image || Icon.Bird,
-            title,
-            subtitle: description,
-            accessory: link,
-            favicon,
-          });
-        }).get();
+            articles.push({
+              id: index,
+              icon: image || Icon.Bird,
+              title,
+              subtitle: description,
+              accessory: link,
+              favicon,
+            });
+          })
+          .get();
 
         await Promise.all(promises);
         setArticles(articles);
