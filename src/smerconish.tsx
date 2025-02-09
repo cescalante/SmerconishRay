@@ -63,8 +63,8 @@ export default function Command() {
   }, []);
 
   return (
-    <List searchBarPlaceholder="Search Smerconish.com/headlines">
-      <List.Section title="Smerconish.com/headlines">
+    <List searchBarPlaceholder="Search Smerconish.com/Headlines">
+      <List.Section title="Latest Headlines from Smerconish.com">
         {articles.map((item) => (
           <List.Item
             key={item.id}
