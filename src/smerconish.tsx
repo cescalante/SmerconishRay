@@ -111,20 +111,29 @@ ${selectedArticle.subtitle}
           <Detail.Metadata>
             <Detail.Metadata.Label title="Source" text={selectedArticle.agency} icon={selectedArticle.favicon} />
             <Detail.Metadata.Link title="" target={selectedArticle.accessory} text={selectedArticle.source} />
-            <Detail.Metadata.Separator />n
+            <Detail.Metadata.Separator />
             <Detail.Metadata.Label title="Previous Article" text={previousArticle.title} />
             <Detail.Metadata.Label title="Next Article" text={nextArticle.title} />
+            <Detail.Metadata.Separator />
+            <Detail.Metadata.Label icon="smerconish.png" title="Find more at:" text="Smerconish.com" />
+            <Detail.Metadata.Link title="" target="https://smerconish.com/headlines" text="Headlines" />
+            <Detail.Metadata.Link title="" target="https://www.smerconish.com/daily-poll/" text="Daily Poll" />
+            <Detail.Metadata.Link title="" target="https://www.smerconish.com/cartoon-gallery/" text="Cartoons" />
           </Detail.Metadata>
         }
         actions={
           <ActionPanel>
             <Action title="Open in Browser" onAction={() => open(selectedArticle.accessory)} />
-            <Action title="Next Story" onAction={handleNextStory} />
-            <Action title="Previous Story" onAction={handlePreviousStory} />
+            <Action title="Next Story" onAction={handleNextStory} shortcut={{ modifiers: ["cmd"], key: "return" }} />
+            <Action
+              title="Previous Story"
+              onAction={handlePreviousStory}
+              shortcut={{ modifiers: ["cmd", "shift"], key: "return" }}
+            />
             <Action
               title="Back"
               onAction={() => setSelectedArticle(null)}
-              shortcut={{ modifiers: ["cmd"], key: "b" }}
+              shortcut={{ modifiers: ["cmd"], key: "arrowLeft" }}
             />
           </ActionPanel>
         }
