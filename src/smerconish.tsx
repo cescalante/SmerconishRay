@@ -1,4 +1,4 @@
-import { ActionPanel, Action, Icon, List } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, Detail, open } from "@raycast/api";
 import axios from "axios";
 import { load } from "cheerio";
 import { useEffect, useState } from "react";
@@ -10,10 +10,15 @@ interface Article {
   subtitle: string;
   accessory: string;
   favicon: string;
+  thumbnailLink: string;
+  source: string;
+  agency: string;
 }
 
 export default function Command() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   useEffect(() => {
     const fetchHeadlines = async () => {
@@ -37,9 +42,12 @@ export default function Command() {
           .map(async (index, element) => {
             const title = $(element).find(".article__title a").text();
             const link = $(element).find(".article__title a").attr("href") || "";
-            const description = $(element).find(".article__excerpt").text();
-            const image = $(element).find(".article__thumbnail img").attr("src") || "";
+            const description = $(element).find(".article__excerpt").text().trim();
+            const image = $(element).find(".article__thumbnail img").attr("data-lazy-src") || $(element).find(".article__thumbnail img").attr("src") || "";
+            const thumbnailLink = $(element).find(".article__thumbnail__link").attr("href") || link;
             const favicon = await fetchFavicon(link);
+            const source = new URL(link).hostname;
+            const agency = $(element).find(".article__source").text().trim();
 
             articles.push({
               id: index,
@@ -48,6 +56,9 @@ export default function Command() {
               subtitle: description,
               accessory: link,
               favicon,
+              thumbnailLink,
+              source,
+              agency,
             });
           })
           .get();
@@ -62,10 +73,61 @@ export default function Command() {
     fetchHeadlines();
   }, []);
 
+  const handlePreview = (article: Article, index: number) => {
+    setSelectedArticle(article);
+    setCurrentIndex(index);
+  };
+
+  const handleNextStory = () => {
+    const nextIndex = (currentIndex + 1) % articles.length;
+    setSelectedArticle(articles[nextIndex]);
+    setCurrentIndex(nextIndex);
+  };
+
+  const handlePreviousStory = () => {
+    const previousIndex = (currentIndex - 1 + articles.length) % articles.length;
+    setSelectedArticle(articles[previousIndex]);
+    setCurrentIndex(previousIndex);
+  };
+
+  if (selectedArticle) {
+    const nextArticle = articles[(currentIndex + 1) % articles.length];
+    const previousArticle = articles[(currentIndex - 1 + articles.length) % articles.length];
+
+    return (
+      <Detail
+        markdown={`
+## ${selectedArticle.title}
+---
+${selectedArticle.subtitle}
+
+<img src="${selectedArticle.icon}" alt="Thumbnail" style="max-width: 80px; height: auto; float: right; margin-left: 20px;" />
+
+`}
+        metadata={
+          <Detail.Metadata>
+            <Detail.Metadata.Label title="Source" text={selectedArticle.agency} icon={selectedArticle.favicon} />
+            <Detail.Metadata.Link title="" target={selectedArticle.accessory} text={selectedArticle.source} />
+            <Detail.Metadata.Separator />
+            <Detail.Metadata.Label title="Next Article" text={nextArticle.title} />
+          </Detail.Metadata>
+        }
+        actions={
+          <ActionPanel>
+            <Action title="Open in Browser" onAction={() => open(selectedArticle.accessory)} />
+            <Action title="Next Story" onAction={handleNextStory} />
+            <Action title="Previous Story" onAction={handlePreviousStory} />
+            <Action title="Back" onAction={() => setSelectedArticle(null)} shortcut={{ modifiers: ["cmd"], key: "b" }} />
+          </ActionPanel>
+        }
+      />
+    );
+  }
+
   return (
     <List searchBarPlaceholder="Search Smerconish.com/Headlines">
       <List.Section title="Latest Headlines from Smerconish.com">
-        {articles.map((item) => (
+        {articles.map((item, index) => (
           <List.Item
             key={item.id}
             icon={item.favicon}
@@ -74,6 +136,7 @@ export default function Command() {
             detail={<List.Item.Detail markdown={`![Image](${item.icon})\n\n**${item.title}**\n\n${item.subtitle}`} />}
             actions={
               <ActionPanel>
+                <Action title="Preview" onAction={() => handlePreview(item, index)} />
                 <Action.OpenInBrowser url={item.accessory} />
                 <Action.CopyToClipboard content={item.title} />
               </ActionPanel>
