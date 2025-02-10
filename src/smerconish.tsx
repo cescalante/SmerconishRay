@@ -43,7 +43,10 @@ export default function Command() {
             const title = $(element).find(".article__title a").text();
             const link = $(element).find(".article__title a").attr("href") || "";
             const description = $(element).find(".article__excerpt").text().trim();
-            const image = $(element).find(".article__thumbnail img").attr("data-lazy-src") || $(element).find(".article__thumbnail img").attr("src") || "";
+            const image =
+              $(element).find(".article__thumbnail img").attr("data-lazy-src") ||
+              $(element).find(".article__thumbnail img").attr("src") ||
+              "";
             const thumbnailLink = $(element).find(".article__thumbnail__link").attr("href") || link;
             const favicon = await fetchFavicon(link);
             const source = new URL(link).hostname;
@@ -108,7 +111,8 @@ ${selectedArticle.subtitle}
           <Detail.Metadata>
             <Detail.Metadata.Label title="Source" text={selectedArticle.agency} icon={selectedArticle.favicon} />
             <Detail.Metadata.Link title="" target={selectedArticle.accessory} text={selectedArticle.source} />
-            <Detail.Metadata.Separator />
+            <Detail.Metadata.Separator />n
+            <Detail.Metadata.Label title="Previous Article" text={previousArticle.title} />
             <Detail.Metadata.Label title="Next Article" text={nextArticle.title} />
           </Detail.Metadata>
         }
@@ -117,7 +121,11 @@ ${selectedArticle.subtitle}
             <Action title="Open in Browser" onAction={() => open(selectedArticle.accessory)} />
             <Action title="Next Story" onAction={handleNextStory} />
             <Action title="Previous Story" onAction={handlePreviousStory} />
-            <Action title="Back" onAction={() => setSelectedArticle(null)} shortcut={{ modifiers: ["cmd"], key: "b" }} />
+            <Action
+              title="Back"
+              onAction={() => setSelectedArticle(null)}
+              shortcut={{ modifiers: ["cmd"], key: "b" }}
+            />
           </ActionPanel>
         }
       />
