@@ -1,5 +1,9 @@
 # Smerconish Changelog
 
+## [b332d0b] - 2025-02-10
+
+Added caching. 
+
 ## [021ea7d] - 2025-02-09
 
 Added additional links to Smerconish.com in the meta and changed up some of the navigation keys. 
