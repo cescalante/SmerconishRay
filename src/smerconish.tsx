@@ -1,7 +1,9 @@
-import { ActionPanel, Action, Icon, List, Detail, open } from "@raycast/api";
+import { ActionPanel, Action, Icon, List, Detail, open, showToast, Toast } from "@raycast/api";
 import axios from "axios";
 import { load } from "cheerio";
 import { useEffect, useState } from "react";
+import fs from "fs";
+import path from "path";
 
 interface Article {
   id: number;
@@ -15,6 +17,9 @@ interface Article {
   agency: string;
 }
 
+const CACHE_FILE_PATH = path.join(__dirname, "cache.json");
+const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes in milliseconds
+
 export default function Command() {
   const [articles, setArticles] = useState<Article[]>([]);
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
@@ -23,6 +28,12 @@ export default function Command() {
   useEffect(() => {
     const fetchHeadlines = async () => {
       try {
+        const cachedData = getCachedData();
+        if (cachedData) {
+          setArticles(cachedData);
+          return;
+        }
+
         const response = await axios.get("https://www.smerconish.com/headlines");
         const $ = load(response.data);
         const articles: Article[] = [];
@@ -68,13 +79,36 @@ export default function Command() {
 
         await Promise.all(promises);
         setArticles(articles);
+        cacheData(articles);
       } catch (error) {
         console.error("Error fetching headlines:", error);
+        showToast(Toast.Style.Failure, "Failed to fetch headlines");
       }
     };
 
     fetchHeadlines();
   }, []);
+
+  const getCachedData = (): Article[] | null => {
+    if (!fs.existsSync(CACHE_FILE_PATH)) {
+      return null;
+    }
+
+    const cache = JSON.parse(fs.readFileSync(CACHE_FILE_PATH, "utf-8"));
+    if (Date.now() - cache.timestamp > CACHE_DURATION) {
+      return null;
+    }
+
+    return cache.articles;
+  };
+
+  const cacheData = (articles: Article[]) => {
+    const cache = {
+      timestamp: Date.now(),
+      articles,
+    };
+    fs.writeFileSync(CACHE_FILE_PATH, JSON.stringify(cache), "utf-8");
+  };
 
   const handlePreview = (article: Article, index: number) => {
     setSelectedArticle(article);
