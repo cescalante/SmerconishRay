@@ -1,5 +1,11 @@
 # Smerconish Changelog
 
+## [021ea7d] - 2025-02-09
+
+Added additional links to Smerconish.com in the meta and changed up some of the navigation keys. 
+
+todo: Research why hitting escape on an article preview takes you back to Raycast instead of the list. 
+
 ## [c41ac65] - 2025-02-09
 
 Added Article Preview functionality. 
