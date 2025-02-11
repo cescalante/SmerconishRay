@@ -5,7 +5,6 @@
   "description": "Gathers Headlines from Smerconish.com",
   "icon": "smerconish.png",
   "author": "cescalante",
-  "owner": "umbrella",
   "categories": [
     "News"
   ],
