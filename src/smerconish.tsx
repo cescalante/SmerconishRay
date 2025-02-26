@@ -2,7 +2,7 @@ import { ActionPanel, Action, Icon, List, Detail, open, showToast, Toast } from 
 import { useCachedPromise } from "@raycast/utils";
 import axios from "axios";
 import { load } from "cheerio";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 interface Article {
   id: number;
@@ -23,7 +23,6 @@ export default function Command() {
   const {
     data: articles,
     isLoading,
-    revalidate,
   } = useCachedPromise(fetchHeadlines, [], {
     initialData: [],
     keepPreviousData: true,
