@@ -1,5 +1,5 @@
 import { ActionPanel, Action, Icon, List, Detail, open, showToast, Toast } from "@raycast/api";
-import { useCachedPromise } from "@raycast/utils";
+import { useCachedPromise, getFavicon } from "@raycast/utils";
 import axios from "axios";
 import { load } from "cheerio";
 import { useState } from "react";
@@ -34,16 +34,6 @@ export default function Command() {
     const $ = load(response.data);
     const articles: Article[] = [];
 
-    const fetchFavicon = async (url: string) => {
-      try {
-        const response = await axios.get(`https://www.google.com/s2/favicons?domain=${new URL(url).hostname}`);
-        return response.config.url || "";
-      } catch (error) {
-        console.error("Error fetching favicon:", error);
-        return Icon.Globe;
-      }
-    };
-
     const promises = $("article.elementor-grid-item")
       .slice(0, 20)
       .map(async (index, element) => {
@@ -55,7 +45,7 @@ export default function Command() {
           $(element).find(".article__thumbnail img").attr("src") ||
           "";
         const thumbnailLink = $(element).find(".article__thumbnail__link").attr("href") || link;
-        const favicon = await fetchFavicon(link);
+        const favicon = getFavicon(link);
         const source = new URL(link).hostname;
         const agency = $(element).find(".article__source").text().trim();
 
@@ -104,7 +94,7 @@ export default function Command() {
 ---
 ${selectedArticle.subtitle}
 
-<img src="${selectedArticle.icon}" alt="Thumbnail" style="max-width: 80px; height: auto; float: right; margin-left: 20px;" />
+<img src="${selectedArticle.icon}" alt="Thumbnail" />
 `}
         metadata={
           <Detail.Metadata>
