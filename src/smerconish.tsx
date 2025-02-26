@@ -20,10 +20,7 @@ export default function Command() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const {
-    data: articles,
-    isLoading,
-  } = useCachedPromise(fetchHeadlines, [], {
+  const { data: articles, isLoading } = useCachedPromise(fetchHeadlines, [], {
     initialData: [],
     keepPreviousData: true,
     onError: (error) => {
