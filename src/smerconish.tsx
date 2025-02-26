@@ -20,7 +20,11 @@ export default function Command() {
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-  const { data: articles, isLoading, revalidate } = useCachedPromise(fetchHeadlines, [], {
+  const {
+    data: articles,
+    isLoading,
+    revalidate,
+  } = useCachedPromise(fetchHeadlines, [], {
     initialData: [],
     keepPreviousData: true,
     onError: (error) => {
@@ -50,7 +54,10 @@ export default function Command() {
         const title = $(element).find(".article__title a").text();
         const link = $(element).find(".article__title a").attr("href") || "";
         const description = $(element).find(".article__excerpt").text().trim();
-        const image = $(element).find(".article__thumbnail img").attr("data-lazy-src") || $(element).find(".article__thumbnail img").attr("src") || "";
+        const image =
+          $(element).find(".article__thumbnail img").attr("data-lazy-src") ||
+          $(element).find(".article__thumbnail img").attr("src") ||
+          "";
         const thumbnailLink = $(element).find(".article__thumbnail__link").attr("href") || link;
         const favicon = await fetchFavicon(link);
         const source = new URL(link).hostname;
