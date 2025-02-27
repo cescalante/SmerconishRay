@@ -40,12 +40,9 @@ export default function Command() {
         const title = $(element).find(".article__title a").text();
         const link = $(element).find(".article__title a").attr("href") || "";
         const description = $(element).find(".article__excerpt").text().trim();
-        const image =
-          $(element).find(".article__thumbnail img").attr("data-lazy-src") ||
-          $(element).find(".article__thumbnail img").attr("src") ||
-          "";
+        const image = $(element).find(".article__thumbnail img").attr("data-lazy-src") || $(element).find(".article__thumbnail img").attr("src") || "";
         const thumbnailLink = $(element).find(".article__thumbnail__link").attr("href") || link;
-        const favicon = getFavicon(link);
+        const favicon = getFavicon(link) as string;
         const source = new URL(link).hostname;
         const agency = $(element).find(".article__source").text().trim();
 
@@ -90,12 +87,11 @@ export default function Command() {
 
     return (
       <Detail
-        markdown={`## ${selectedArticle.title}
----
-${selectedArticle.subtitle}
+        markdown={`# ${selectedArticle.title}
 
-<img src="${selectedArticle.icon}" alt="Thumbnail" />
-`}
+<img src="${selectedArticle.icon}" alt="Thumbnail" style="max-width: 80px; height: auto; float: right; margin-left: 20px;" />
+
+${selectedArticle.subtitle}`}
         metadata={
           <Detail.Metadata>
             <Detail.Metadata.Label title="Source" text={selectedArticle.agency} icon={selectedArticle.favicon} />
