@@ -90,11 +90,12 @@ export default function Command() {
 
     return (
       <Detail
-        markdown={`# ${selectedArticle.title}
+        markdown={`## ${selectedArticle.title}
+---
+${selectedArticle.subtitle}
 
-<img src="${selectedArticle.icon}" alt="Thumbnail" style="max-width: 80px; height: auto; float: right; margin-left: 20px;" />
-
-${selectedArticle.subtitle}`}
+<img src="${selectedArticle.icon}" alt="Thumbnail" />
+`}
         metadata={
           <Detail.Metadata>
             <Detail.Metadata.Label title="Source" text={selectedArticle.agency} icon={selectedArticle.favicon} />
